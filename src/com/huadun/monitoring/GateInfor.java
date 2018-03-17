@@ -1,6 +1,6 @@
 package com.huadun.monitoring;
 
-public class GateInfo {
+public class GateInfor {
 	
 	private String id;
 	
@@ -91,5 +91,12 @@ public class GateInfo {
 	public void setCheckInfo(String checkInfo) {
 		this.checkInfo = checkInfo;
 	}
+	
+	@Override
+    public String toString() {
+        StringBuilder stringBuilder=new StringBuilder("apiName="+apiName+"&terminalNo="+terminalNo+"&lineNo="+lineNo+"&stationNo="+stationNo
+        		+"&entryTime="+entryTime+"&frontPhoto="+frontPhoto+"&selfPhoto="+selfPhoto+"&checkInfo="+checkInfo);
+        return stringBuilder.toString();
+    }
 
 }

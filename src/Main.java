@@ -2,11 +2,12 @@
 
 import com.amix.util.Base64ImgUtil;
 import com.amix.util.HttpRequestUtil;
-import com.huadun.monitoring.GateInfo;
+import com.huadun.monitoring.GateInfor;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -16,6 +17,7 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 
@@ -31,7 +33,9 @@ public class Main {
         @Override
         public void handle(HttpExchange exchange) {
             String response = "hello world";
-            final String saveGateInforURL = "http://localhost:8080/shieldDoor/saveGate";
+//            final String saveGateInforURL = "http://localhost:8989/monitoringsystem/shieldDoor/saveGateData";
+            final String saveGateInforURL = "http://localhost:8989/monitoringsystem/shieldDoor/saveGateData";
+            
 
             try{
 //                //��ò�ѯ�ַ���(get)
@@ -43,31 +47,40 @@ public class Main {
                 Map<String,String> postInfo = formData2Dic(postString);
                 String oldfrontPhoto = postInfo.get("frontPhoto");
                 String frontPhoto  = URLDecoder.decode(oldfrontPhoto, "UTF-8");//获得编码后的Base64字符
+                String oldselfPhoto = postInfo.get("selfPhoto");
+                String selfPhoto = URLDecoder.decode(oldselfPhoto, "UTF-8");//获得编码后的Base64字符
 //                String imgFilePath = System.getProperty("user.dir") ;
 //                String imgFilePath ="../"
 //                System.out.println(imgFilePath);
 //                System.out.println(frontPhoto);
-                String imagePath = "f:/aa.jpeg";
+                String picPath = "D:/jiaduPicture";
+                File file = new File(picPath);
+                if(!file.exists()){
+                	file.mkdirs();
+                }
+                String realPicName = UUID.randomUUID().toString();
+                String realPicPath = picPath+"/"+realPicName+".jpeg";
                 Base64ImgUtil base64ImgUtil =  new Base64ImgUtil();
-                base64ImgUtil.GenerateImage(frontPhoto,imagePath);
-                String oldselfPhoto = postInfo.get("selfPhoto");
-                String selfPhoto = URLDecoder.decode(oldselfPhoto, "UTF-8");//获得编码后的Base64字符
+                base64ImgUtil.GenerateImage(frontPhoto,realPicPath);
+                
+                String livePicName = UUID.randomUUID().toString();
+                String livePicPath = picPath+"/"+realPicName+".jpeg";
+                base64ImgUtil.GenerateImage(selfPhoto,livePicPath);
+                
 //                HttpRequestUtil httpRequestUtil = new HttpRequestUtil();
                 /**封装成一个类，用于保存数据**/
-                GateInfo gateInfo = new GateInfo();
-                gateInfo.setApiName(postInfo.get("apiName"));
-                gateInfo.setCheckInfo(postInfo.get("checkInfo"));
-                gateInfo.setEntryTime(postInfo.get("entryTime"));
-                gateInfo.setFrontPhoto(postInfo.get("frontPhoto"));
-                gateInfo.setLineNo(postInfo.get("lineNo"));
-                gateInfo.setSelfPhoto(postInfo.get("selfPhoto"));
-                gateInfo.setStationNo(postInfo.get("stationNo"));
-                gateInfo.setTerminalNo(postInfo.get("terminalNo"));
+                GateInfor gateInfor = new GateInfor();
+                gateInfor.setApiName(postInfo.get("apiName"));
+                gateInfor.setCheckInfo(postInfo.get("checkInfo"));
+                gateInfor.setEntryTime(postInfo.get("entryTime"));
+                gateInfor.setFrontPhoto(realPicName);
+                gateInfor.setLineNo(postInfo.get("lineNo"));
+                gateInfor.setSelfPhoto(livePicName);
+                gateInfor.setStationNo(postInfo.get("stationNo"));
+                gateInfor.setTerminalNo(postInfo.get("terminalNo"));
                 /**发送http Post请求保存数据**/
-                HttpRequestUtil.sendPost(saveGateInforURL, gateInfo.toString());
-                
-                
-                
+                System.out.println(gateInfor.toString());
+                HttpRequestUtil.sendPost(saveGateInforURL, gateInfor.toString());
                 exchange.sendResponseHeaders(200,0);
                 OutputStream os = exchange.getResponseBody();
                 os.write(response.getBytes());

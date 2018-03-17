@@ -26,14 +26,13 @@ public class testDoPostReq {
 		paramMap.put("lineNo", "01");
 		paramMap.put("stationNo", "01");
 		paramMap.put("entryTime", "20180312101400");
-		paramMap.put("frontPhoto", URLEncoder.encode(Base64ImgUtil.GetImageStr("D:/jiaduTest/A.jpg"),"UTF-8"));
-		paramMap.put("selfPhoto", URLEncoder.encode(Base64ImgUtil.GetImageStr("D:/jiaduTest/B.jpg"),"UTF-8"));
+		paramMap.put("frontPhoto", URLEncoder.encode(Base64ImgUtil.GetImageStr("D:/picture/A.jpg"),"UTF-8"));
+		paramMap.put("selfPhoto", URLEncoder.encode(Base64ImgUtil.GetImageStr("D:/picture/B.jpg"),"UTF-8"));
 		paramMap.put("checkInfo", "安检门安检信息:xxxxx");
 		
 		String jresMsg = httpsConnectUtil.doPost("http://localhost:8001/test",paramMap);
 		
 		System.out.println("resMsg->"+jresMsg);
-		
 	}
 	
 
